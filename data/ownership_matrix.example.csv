@@ -1,0 +1,3 @@
+system_id;system_name;fachlicher_owner;technischer_ansprechpartner;ticketweg;sla_stunden;eskalation_stufe1;eskalation_stufe2;aktiv
+M365-SHARED-FIN;Shared Mailbox Finanzen;Teamleitung Finance;IT Operations Team A;GoTo Helpdesk - Service "Microsoft 365";24;Head of IT Operations;CIO Office;true
+DC-CONNECT;dentsu Connect;Platform Owner Connect;Platform Support;GoTo Helpdesk - Service "Plattformzugang";48;Platform Lead;Head of Digital Platforms;true
