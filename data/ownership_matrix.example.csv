@@ -1,3 +1,4 @@
-system_id;system_name;fachlicher_owner;technischer_ansprechpartner;ticketweg;sla_stunden;eskalation_stufe1;eskalation_stufe2;aktiv
-M365-SHARED-FIN;Shared Mailbox Finanzen;Teamleitung Finance;IT Operations Team A;GoTo Helpdesk - Service "Microsoft 365";24;Head of IT Operations;CIO Office;true
-DC-CONNECT;dentsu Connect;Platform Owner Connect;Platform Support;GoTo Helpdesk - Service "Plattformzugang";48;Platform Lead;Head of Digital Platforms;true
+system_id;system_name;fachlicher_owner;technischer_ansprechpartner;ticketweg;sla_stunden;eskalation_stufe1;eskalation_stufe2;aktiv;freigabe_kunde_noetig;uebergabepfad;berechtigungsarten
+M365-SHARED-FIN;Shared Mailbox Finanzen;Teamleitung Finance;IT Operations Team A;GoTo Helpdesk - Service "Microsoft 365";24;Head of IT Operations;CIO Office;true;false;Platzhalter Uebergabepfad IT Operations;read,send_as,send_on_behalf
+DC-CONNECT;dentsu Connect;Platform Owner Connect;Platform Support;GoTo Helpdesk - Service "Plattformzugang";48;Platform Lead;Head of Digital Platforms;true;false;Platzhalter Uebergabepfad Platform Support;
+APPLE-MANAGED;Apple Managed Accounts;Platzhalter Fachlicher Owner;Platzhalter Technischer Ansprechpartner;GoTo Helpdesk - Service "Apple Managed Accounts";24;Platzhalter Eskalation Stufe 1;Platzhalter Eskalation Stufe 2;true;true;Platzhalter Uebergabepfad dentsu Digital Delivery;admin,member
