@@ -178,3 +178,6 @@ Die Statuszuordnung zu GoTo Resolve wird später in einem eigenen Mapping gepfle
 5. Eine fehlerhafte Matrix-CSV wird vollständig abgelehnt und meldet die Fehlerzeilen.
 6. Jeder Statuswechsel erzeugt einen Ereignis-Log-Eintrag.
 7. Alle Tests sind grün, `ruff check .` meldet keine Fehler.
+
+## 12. Offene Punkte
+- **Verifikation (Abschnitt 5, Übergang `umgesetzt` → `verifiziert`):** Wer darf verifizieren, und wie wird die Identität der verifizierenden Person geprüft? Die Regel „Anforderer oder Prüfung“ und die Identitätsprüfung sind noch nicht definiert. Bis zur Klärung speichert die Anwendung `verifiziert_durch` als Freitext, ohne Rollen- oder Identitätsprüfung.
