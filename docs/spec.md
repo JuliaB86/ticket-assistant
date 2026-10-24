@@ -58,6 +58,7 @@ sind in Phase 1 nicht umgesetzt. Das Datenmodell muss sie aber aufnehmen können
 | verifiziert_durch | Text | nein | Pflicht beim Übergang nach `verifiziert` |
 | verifiziert_am | Zeitstempel | nein | |
 | sla_faellig_am | Zeitstempel | nein | Berechnet aus Matrix-SLA |
+| wiedereroeffnungen | Ganzzahl | ja | Start 0, steigt bei jedem Übergang `umgesetzt` → `bei_owner` um 1, siehe Abschnitt 13.4 |
 
 ### Matrix-Eintrag
 | Feld | Typ | Pflicht |
@@ -71,6 +72,9 @@ sind in Phase 1 nicht umgesetzt. Das Datenmodell muss sie aber aufnehmen können
 | eskalation_stufe1 | Text | ja |
 | eskalation_stufe2 | Text | ja |
 | aktiv | Boolean | ja |
+| freigabe_kunde_noetig | Boolean | ja |
+| uebergabepfad | Text | ja |
+| berechtigungsarten | Text, kommagetrennt | nein |
 
 ### Ereignis-Log
 | Feld | Typ |
@@ -139,6 +143,7 @@ Fehlende Pflichtfelder führen zu `wartet_auf_information`. Der Assistant fragt 
 - Import als CSV mit Semikolon als Trennzeichen und UTF-8
 - Spalten gemäß Abschnitt 4
 - Validierung: Pflichtfelder gefüllt, `sla_stunden` positiv, `system_id` eindeutig
+- Validierung der Pilot-Spalten (Abschnitt 13.5): `freigabe_kunde_noetig` ist ein Boolean, `uebergabepfad` ist gefüllt, `berechtigungsarten` ist optional und enthält kein Semikolon. Das Trennzeichen innerhalb der Zelle ist das Komma, da das Semikolon das Feldtrennzeichen der Datei ist.
 - Fehlerhafte Zeilen werden mit Zeilennummer und Grund gemeldet. Ein Import mit Fehlern wird komplett abgelehnt.
 - Jeder Import erzeugt einen Ereignis-Log-Eintrag mit Anzahl der Zeilen und Dateiname
 - Die Matrix hat einen benannten Owner, der im Projekt festgelegt wird (offen)
@@ -181,3 +186,56 @@ Die Statuszuordnung zu GoTo Resolve wird später in einem eigenen Mapping gepfle
 
 ## 12. Offene Punkte
 - **Verifikation (Abschnitt 5, Übergang `umgesetzt` → `verifiziert`):** Wer darf verifizieren, und wie wird die Identität der verifizierenden Person geprüft? Die Regel „Anforderer oder Prüfung“ und die Identitätsprüfung sind noch nicht definiert. Bis zur Klärung speichert die Anwendung `verifiziert_durch` als Freitext, ohne Rollen- oder Identitätsprüfung.
+- **Freigeber bei Apple Managed Accounts (Abschnitt 13.2):** Offen, ob dentsu Digital Delivery oder der Kunde die Freigabe erteilt. Wird nicht als Annahme umgesetzt. Der Wert von `freigabe_kunde_noetig` in der Beispiel-Matrix ist ein Platzhalter und keine Entscheidung.
+- **Kanal und Empfänger der Erinnerung (Abschnitt 8, Phase 2):** Offen, ob Erinnerungen über Teams laufen und wer sie erhält (Owner, technischer Ansprechpartner oder Anforderer). In Phase 1 nicht umgesetzt.
+
+## 13. Pilot (CE Hub)
+
+### 13.1 Scope
+Organisatorischer Scope ist der CE Hub. dentsu Connect, dentsu Digital Delivery und weitere
+zentrale Plattformen gelten als Teil des CE-Hub-Ökosystems. Die Matrix wird im Pilot auf die
+häufigsten Access-Themen fokussiert.
+
+### 13.2 Pilot 1: Apple Managed Accounts (Fallart `access_issue`)
+Pflichtfelder zusätzlich zu Abschnitt 6:
+- Kontoart (persönliche Apple ID oder Managed Apple Account)
+- Kunde bzw. Account
+- Benötigte Rolle oder Berechtigung
+
+Die Kontoart bestimmt den Ticketweg.
+
+Freigabe: OFFEN, ob dentsu Digital Delivery oder der Kunde freigibt. Dies wird nicht als Annahme
+umgesetzt und ist als offener Punkt in Abschnitt 12 geführt.
+
+### 13.3 Pilot 2: Shared Mailbox Access (Fallart `access_issue`)
+Pflichtfelder zusätzlich zu Abschnitt 6:
+- Mailbox
+- Berechtigungsart (`read`, `send_as`, `send_on_behalf`, mehrere möglich)
+- Genehmiger, sofern bekannt
+
+### 13.4 Schleifenregel
+Ein in GoTo als gelöst markiertes Ticket setzt die Vorgangsposition NICHT auf `verifiziert`.
+Sie bleibt auf `umgesetzt`, bis der Anforderer bestätigt.
+
+Meldet der Anforderer, dass das Problem besteht, läuft der bestehende Übergang
+`umgesetzt` → `bei_owner`. Das GoTo-Ticket wird wieder geöffnet und verweist auf denselben
+Vorgang. Es entsteht kein neuer Vorgang.
+
+Die Position bekommt ein Feld `wiedereroeffnungen` (Ganzzahl, Start 0), das bei jedem solchen
+Übergang um 1 steigt. Es werden keine neuen Statuswerte eingeführt.
+
+### 13.5 Matrix-Erweiterung (Abschnitt 4 und 7 angepasst)
+Neue Spalten im Matrix-Eintrag:
+- `freigabe_kunde_noetig` (Boolean, Pflicht)
+- `uebergabepfad` (Text, Pflicht, wer übernimmt bei Nichtzuständigkeit)
+- `berechtigungsarten` (Text, optional, Trennzeichen innerhalb der Zelle ist das Komma.
+  Ein Semikolon ist nicht erlaubt, da es das Feldtrennzeichen der Datei ist.)
+
+Die Beispieldatei `data/ownership_matrix.example.csv` enthält diese Spalten mit
+Platzhalterwerten sowie je eine Zeile für Apple Managed Accounts und Shared Mailbox.
+
+### 13.6 Nicht in Phase 1
+- Kundenspezifische Berechtigungen, zum Beispiel Campaign Flow pro Kunde
+- Erinnerungen über Teams
+- Joiner-Ampel
+- Pflichttrainings
